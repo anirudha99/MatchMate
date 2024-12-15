@@ -36,37 +36,44 @@ struct MatchCardView: View {
             }
             .padding(.bottom, 10)
 
-            // Accept and Decline Buttons
-            HStack(spacing: 40) {
-                Button(action: onAccept) {
-                    Image(systemName: "checkmark")
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.green)
-                        .clipShape(Circle())
-                }
+            // ZStack to overlay status on top of the buttons
+            ZStack {
+                // Accept and Decline Buttons (visible only if the status is pending)
+                if profile.status == .pending {
+                    HStack(spacing: 40) {
+                        Button(action: onAccept) {
+                            Image(systemName: "checkmark")
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(Color.green)
+                                .clipShape(Circle())
+                        }
 
-                Button(action: onDecline) {
-                    Image(systemName: "xmark")
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.red)
-                        .clipShape(Circle())
-                }
-            }
-            .padding(.top, 10)
-
-            // Display Status if not Pending
-            if profile.status != .pending {
-                Text("Status: \(profile.status.rawValue)")
-                    .font(.headline)
-                    .foregroundColor(profile.status == .accepted ? .green : .red)
+                        Button(action: onDecline) {
+                            Image(systemName: "xmark")
+                                .foregroundColor(.white)
+                                .padding()
+                                .background(Color.red)
+                                .clipShape(Circle())
+                        }
+                    }
                     .padding(.top, 10)
-                    .frame(maxWidth: .infinity)
-                    .background(profile.status == .accepted ? Color.green.opacity(0.3) : Color.red.opacity(0.3))
-                    .cornerRadius(10)
-                    .padding(.horizontal, 20)
+                }
+
+                // Display Status if not Pending (will overlap the buttons)
+                if profile.status != .pending {
+                    Text("Status: \(profile.status.rawValue)")
+                        .font(.headline)
+                        .foregroundColor(profile.status == .accepted ? .green : .red)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(profile.status == .accepted ? Color.green.opacity(0.3) : Color.red.opacity(0.3))
+                        .cornerRadius(10)
+                        .padding(.horizontal, 20)
+                        .zIndex(1)
+                }
             }
+
         }
         .padding()
         .frame(maxWidth: .infinity)
