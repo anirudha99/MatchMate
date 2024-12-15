@@ -26,7 +26,7 @@ struct ContentView: View {
                         ForEach(viewModel.profiles) { profile in
                             VStack {
                                 MatchCardView(
-                                    profile: profile,
+                                    profile: $viewModel.profiles[viewModel.profiles.firstIndex(where: { $0.id == profile.id })!],
                                     onAccept: {
                                         viewModel.updateProfileStatus(profile, status: .accepted)
                                     },

@@ -10,7 +10,7 @@ import SDWebImageSwiftUI
 import SDWebImage
 
 struct MatchCardView: View {
-    @State var profile: UserProfile
+    @Binding var profile: UserProfile
     let onAccept: () -> Void
     let onDecline: () -> Void
 
@@ -62,6 +62,10 @@ struct MatchCardView: View {
                     .font(.headline)
                     .foregroundColor(profile.status == .accepted ? .green : .red)
                     .padding(.top, 10)
+                    .frame(maxWidth: .infinity)
+                    .background(profile.status == .accepted ? Color.green.opacity(0.3) : Color.red.opacity(0.3))
+                    .cornerRadius(10)
+                    .padding(.horizontal, 20)
             }
         }
         .padding()
@@ -76,6 +80,6 @@ struct MatchCardView: View {
 }
 
 
-#Preview {
-    MatchCardView(profile: UserProfile(name: "Sam", age: 35, location: "Bengaluru, Karnataka", imageURL: "https://picsum.photos/200/300", status: .pending), onAccept: {}, onDecline: {})
-}
+//#Preview {
+//    MatchCardView(profile: UserProfile(name: "Sam", age: 35, location: "Bengaluru, Karnataka", imageURL: "https://picsum.photos/200/300", status: .pending), onAccept: {}, onDecline: {})
+//}
