@@ -14,34 +14,49 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 16) { // Add spacing between cards
-                    ForEach(viewModel.profiles) { profile in
-                        VStack {
-                            MatchCardView(
-                                profile: profile,
-                                onAccept: {
-                                    viewModel.updateProfileStatus(profile, status: .accepted)
-                                },
-                                onDecline: {
-                                    viewModel.updateProfileStatus(profile, status: .declined)
+            ZStack {
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.pink.opacity(0.6), Color.purple.opacity(0.3)]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .edgesIgnoringSafeArea(.all)
+                ScrollView {
+                    VStack(spacing: 16) { // Add spacing between cards
+                        ForEach(viewModel.profiles) { profile in
+                            VStack {
+                                MatchCardView(
+                                    profile: profile,
+                                    onAccept: {
+                                        viewModel.updateProfileStatus(profile, status: .accepted)
+                                    },
+                                    onDecline: {
+                                        viewModel.updateProfileStatus(profile, status: .declined)
+                                    }
+                                )
+                                Spacer(minLength: 16)
+                                
+                                // Custom Divider
+                                if profile.id != viewModel.profiles.last?.id {
+                                    Rectangle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .frame(height: 1)
+                                        .padding(.horizontal, 20)
                                 }
-                            )
-                            Spacer(minLength: 16)
-                            
-                            // Custom Divider
-                            if profile.id != viewModel.profiles.last?.id {
-                                Rectangle()
-                                    .fill(Color.gray.opacity(0.3))
-                                    .frame(height: 1)
-                                    .padding(.horizontal, 20)
                             }
                         }
                     }
+                    .padding()
                 }
-                .padding()
             }
-            .navigationTitle("MatchMate")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("MatchMate")
+                        .font(.largeTitle)
+                        .foregroundColor(.black)
+                }
+            }
             .onAppear {
                 viewModel.fetchProfiles()
             }
