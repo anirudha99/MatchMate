@@ -55,8 +55,15 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("MatchMate")
-                        .font(.largeTitle)
-                        .foregroundColor(.black)
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .cornerRadius(8)
+                        .tracking(1)
+                        .foregroundStyle(LinearGradient(
+                            gradient: Gradient(colors: [Color.pink, Color.purple]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ))
+
                 }
             }
             .onAppear {
