@@ -10,57 +10,72 @@ import SDWebImageSwiftUI
 import SDWebImage
 
 struct MatchCardView: View {
-    let profile: UserProfile
+    @State var profile: UserProfile
     let onAccept: () -> Void
     let onDecline: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                WebImage(url: URL(string: profile.imageURL))
-                    .resizable()
-//                    .placeholder(Image(systemName: "person.fill"))
-                    .frame(width: 80, height: 80)
-                    .clipShape(Circle())
+        VStack {
+            // Profile Image
+            WebImage(url: URL(string: profile.imageURL))
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 120, height: 120)
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .padding(.bottom, 10)
 
-                VStack(alignment: .leading) {
-                    Text(profile.name)
-                        .font(.headline)
-                    Text("Age: \(profile.age)")
-                    Text(profile.location)
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
-                Spacer()
+            // Name, Age, and Location
+            VStack(spacing: 5) {
+                Text(profile.name)
+                    .font(.title3)
+                    .fontWeight(.bold)
+
+                Text("Age: \(profile.age) • \(profile.location)")
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
             }
+            .padding(.bottom, 10)
 
-            HStack {
+            // Accept and Decline Buttons
+            HStack(spacing: 40) {
                 Button(action: onAccept) {
-                    Text("Accept")
+                    Image(systemName: "checkmark")
+                        .foregroundColor(.white)
                         .padding()
                         .background(Color.green)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                        .clipShape(Circle())
                 }
 
                 Button(action: onDecline) {
-                    Text("Decline")
+                    Image(systemName: "xmark")
+                        .foregroundColor(.white)
                         .padding()
                         .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                        .clipShape(Circle())
                 }
             }
             .padding(.top, 10)
 
+            // Display Status if not Pending
             if profile.status != .pending {
                 Text("Status: \(profile.status.rawValue)")
-                    .font(.footnote)
+                    .font(.headline)
                     .foregroundColor(profile.status == .accepted ? .green : .red)
+                    .padding(.top, 10)
             }
         }
         .padding()
-        .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray))
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 15)
+                .fill(Color.white)
+                .shadow(color: Color.gray.opacity(0.4), radius: 5, x: 0, y: 2)
+        )
         .padding(.horizontal)
     }
+}
+
+
+#Preview {
+    MatchCardView(profile: UserProfile(name: "Sam", age: 35, location: "Bengaluru, Karnataka", imageURL: "https://picsum.photos/200/300", status: .pending), onAccept: {}, onDecline: {})
 }

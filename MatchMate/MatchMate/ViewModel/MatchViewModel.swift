@@ -47,6 +47,7 @@ class MatchViewModel: ObservableObject {
         if let index = profiles.firstIndex(where: { $0.id == profile.id }) {
             profiles[index].status = status
             saveProfilesToCache(profiles)
+            objectWillChange.send() // Notify views of the state change
         }
     }
 
