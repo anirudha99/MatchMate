@@ -9,6 +9,7 @@ import SwiftUI
 import CoreData
 
 // MARK: - Main View
+
 struct ContentView: View {
     @StateObject private var viewModel = MatchViewModel(context: PersistenceController.shared.container.viewContext)
     
@@ -21,6 +22,7 @@ struct ContentView: View {
                     endPoint: .bottomTrailing
                 )
                 .edgesIgnoringSafeArea(.all)
+                
                 ScrollView {
                     VStack(spacing: 16) { // Add spacing between cards
                         ForEach(viewModel.profiles) { profile in
