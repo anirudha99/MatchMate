@@ -82,12 +82,12 @@ class MatchViewModelTests: XCTestCase {
         )
         let mockResponse = APIResponse(results: [mockUser])
         mockNetworkClient.mockResponse = mockResponse
-        
+
         // Expectation for async API fetch
         let expectation = XCTestExpectation(description: "Fetch profiles from API")
-        
+
         viewModel.fetchProfiles()
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             XCTAssertEqual(self.viewModel.profiles.count, 1, "Profiles count should be 1")
             XCTAssertEqual(self.viewModel.profiles[0].name, "John Doe", "Name should match")

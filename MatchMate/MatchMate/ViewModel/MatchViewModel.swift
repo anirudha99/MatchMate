@@ -39,7 +39,6 @@ class MatchViewModel: ObservableObject {
                             status: .pending
                         )
                     }
-                    // Cache the fetched profiles to Core Data
                     self.saveProfilesToCache(profiles: self.profiles)
 
                 case .failure(let error):
@@ -49,6 +48,9 @@ class MatchViewModel: ObservableObject {
             }
         }
     }
+
+    
+
 
     /// Update the status of a user profile and sync with Core Data.
     func updateProfileStatus(_ profile: UserProfile, status: UserProfile.MatchStatus) {
@@ -87,34 +89,29 @@ class MatchViewModel: ObservableObject {
     }
 
     /// Save profiles to Core Data.
-    private func saveProfilesToCache(profiles: [UserProfile]) {
-        // Remove existing Core Data entries
+    func saveProfilesToCache(profiles: [UserProfile]) {
+        // Perform a batch delete to remove existing profiles before adding new ones
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = UserProfileEntity.fetchRequest()
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
 
         do {
-            try context.execute(deleteRequest) // Clear old profiles
+            // Delete all old profiles
+            try context.execute(deleteRequest)
+            
+            // Save new profiles
+            for profile in profiles {
+                let userProfileEntity = UserProfileEntity(context: context)
+                userProfileEntity.name = profile.name
+                userProfileEntity.age = Int16(profile.age)
+                userProfileEntity.location = profile.location
+                userProfileEntity.imageURL = profile.imageURL
+                userProfileEntity.status = profile.status.rawValue
+            }
+
+            // Save the context with the new profiles
             try context.save()
         } catch {
-            print("Error clearing old cached profiles: \(error)")
-        }
-
-        // Add new profiles
-        for profile in profiles {
-            let entity = UserProfileEntity(context: context)
-            entity.uuid = profile.id
-            entity.name = profile.name
-            entity.age = Int16(profile.age)
-            entity.location = profile.location
-            entity.imageURL = profile.imageURL
-            entity.status = profile.status.rawValue
-        }
-
-        // Save the context
-        do {
-            try context.save()
-        } catch {
-            print("Error saving new profiles to Core Data: \(error)")
+            print("Error saving profiles to cache: \(error)")
         }
     }
 
