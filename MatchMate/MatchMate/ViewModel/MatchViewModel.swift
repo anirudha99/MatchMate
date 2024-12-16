@@ -14,38 +14,43 @@ import Combine
 class MatchViewModel: ObservableObject {
     @Published var profiles: [UserProfile] = []
     private let context: NSManagedObjectContext
+    private let networkClient: NetworkClientProtocol
 
-    init(context: NSManagedObjectContext) {
+    init(context: NSManagedObjectContext, networkClient: NetworkClientProtocol = NetworkClient()) {
         self.context = context
-        loadCachedProfiles() // Initially load cached profiles
+        self.networkClient = networkClient
+        loadCachedProfiles()
     }
 
     /// Fetch profiles from the API. If offline or the request fails, use cached profiles.
     func fetchProfiles() {
-        AF.request("https://randomuser.me/api/?results=10")
-            .validate()
-            .responseDecodable(of: APIResponse.self) { response in
-                switch response.result {
+        networkClient.fetchProfiles { result in
+            DispatchQueue.main.async {
+                switch result {
                 case .success(let data):
                     // Clear existing profiles and use API response
-                    self.profiles = data.results.map {
+                    self.profiles = data.results.map { apiUser in
                         UserProfile(
                             id: UUID(),
-                            name: "\($0.name.first) \($0.name.last)",
-                            age: $0.dob.age,
-                            location: $0.location.city,
-                            imageURL: $0.picture.large,
+                            name: "\(apiUser.name.first) \(apiUser.name.last)",
+                            age: apiUser.dob.age,
+                            location: apiUser.location.city,
+                            imageURL: apiUser.picture.large,
                             status: .pending
                         )
                     }
-                    self.saveProfilesToCache(profiles: self.profiles) // Cache API data locally
-                    
-                case .failure:
-                    print("API fetch failed. Falling back to cached data.")
-                    self.loadCachedProfiles() // Load from Core Data on failure
+                    self.saveProfilesToCache(profiles: self.profiles)
+
+                case .failure(let error):
+                    print("API fetch failed with error: \(error.localizedDescription). Falling back to cached data.")
+                    self.loadCachedProfiles() // Load from Core Data when API request fails
                 }
             }
+        }
     }
+
+    
+
 
     /// Update the status of a user profile and sync with Core Data.
     func updateProfileStatus(_ profile: UserProfile, status: UserProfile.MatchStatus) {
@@ -72,7 +77,7 @@ class MatchViewModel: ObservableObject {
     }
 
     /// Load cached profiles from Core Data.
-    private func loadCachedProfiles() {
+    func loadCachedProfiles() {
         let fetchRequest: NSFetchRequest<UserProfileEntity> = UserProfileEntity.fetchRequest()
         
         do {
@@ -84,34 +89,29 @@ class MatchViewModel: ObservableObject {
     }
 
     /// Save profiles to Core Data.
-    private func saveProfilesToCache(profiles: [UserProfile]) {
-        // Remove existing Core Data entries
+    func saveProfilesToCache(profiles: [UserProfile]) {
+        // Perform a batch delete to remove existing profiles before adding new ones
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = UserProfileEntity.fetchRequest()
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
 
         do {
-            try context.execute(deleteRequest) // Clear old profiles
+            // Delete all old profiles
+            try context.execute(deleteRequest)
+            
+            // Save new profiles
+            for profile in profiles {
+                let userProfileEntity = UserProfileEntity(context: context)
+                userProfileEntity.name = profile.name
+                userProfileEntity.age = Int16(profile.age)
+                userProfileEntity.location = profile.location
+                userProfileEntity.imageURL = profile.imageURL
+                userProfileEntity.status = profile.status.rawValue
+            }
+
+            // Save the context with the new profiles
             try context.save()
         } catch {
-            print("Error clearing old cached profiles: \(error)")
-        }
-
-        // Add new profiles
-        for profile in profiles {
-            let entity = UserProfileEntity(context: context)
-            entity.uuid = profile.id
-            entity.name = profile.name
-            entity.age = Int16(profile.age)
-            entity.location = profile.location
-            entity.imageURL = profile.imageURL
-            entity.status = profile.status.rawValue
-        }
-
-        // Save the context
-        do {
-            try context.save()
-        } catch {
-            print("Error saving new profiles to Core Data: \(error)")
+            print("Error saving profiles to cache: \(error)")
         }
     }
 
