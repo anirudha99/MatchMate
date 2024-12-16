@@ -5,9 +5,9 @@
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
-		<string>MMLogo</string>
+		<string>LaunchScreenFull</string>
 		<key>UIImageName</key>
-		<string>MMLogo</string>
+		<string>LaunchScreenFull</string>
 	</dict>
 </dict>
 </plist>
