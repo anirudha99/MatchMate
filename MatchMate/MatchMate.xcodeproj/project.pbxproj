@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8F5096EC2D103D9D009C61D2 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F5096EB2D103D9D009C61D2 /* XCTest.framework */; platformFilter = ios; };
+		8F5096ED2D103D9D009C61D2 /* XCTest.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8F5096EB2D103D9D009C61D2 /* XCTest.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8FA110B62D0E9F5300B73666 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8FA110B52D0E9F5300B73666 /* SDWebImageSwiftUI */; };
 		8FA110C72D0EABEA00B73666 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 8FA110C62D0EABEA00B73666 /* Alamofire */; };
 /* End PBXBuildFile section */
@@ -28,13 +30,42 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		8F5096EE2D103D9D009C61D2 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8F5096ED2D103D9D009C61D2 /* XCTest.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		8F5096EB2D103D9D009C61D2 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		8FA110752D0E98D800B73666 /* MatchMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MatchMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FA1108A2D0E98DB00B73666 /* MatchMateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatchMateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FA110942D0E98DB00B73666 /* MatchMateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MatchMateUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8F5096E92D103BD3009C61D2 /* Exceptions for "MatchMateUnitTests" folder in "MatchMateTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				MatchViewModelTest.swift,
+			);
+			target = 8FA110892D0E98DB00B73666 /* MatchMateTests */;
+		};
+		8F5096EF2D103EB7009C61D2 /* Exceptions for "MatchMateUnitTests" folder in "MatchMate" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				MatchViewModelTest.swift,
+			);
+			target = 8FA110742D0E98D800B73666 /* MatchMate */;
+		};
 		8FA110C92D0EB8B100B73666 /* Exceptions for "MatchMate" folder in "MatchMate" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -45,17 +76,21 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		8F5096E52D103BB1009C61D2 /* MatchMateUnitTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8F5096EF2D103EB7009C61D2 /* Exceptions for "MatchMateUnitTests" folder in "MatchMate" target */,
+				8F5096E92D103BD3009C61D2 /* Exceptions for "MatchMateUnitTests" folder in "MatchMateTests" target */,
+			);
+			path = MatchMateUnitTests;
+			sourceTree = "<group>";
+		};
 		8FA110772D0E98D800B73666 /* MatchMate */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				8FA110C92D0EB8B100B73666 /* Exceptions for "MatchMate" folder in "MatchMate" target */,
 			);
 			path = MatchMate;
-			sourceTree = "<group>";
-		};
-		8FA1108D2D0E98DB00B73666 /* MatchMateTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MatchMateTests;
 			sourceTree = "<group>";
 		};
 		8FA110972D0E98DB00B73666 /* MatchMateUITests */ = {
@@ -79,6 +114,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F5096EC2D103D9D009C61D2 /* XCTest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,12 +128,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8F5096EA2D103D9D009C61D2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8F5096EB2D103D9D009C61D2 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		8FA1106C2D0E98D800B73666 = {
 			isa = PBXGroup;
 			children = (
 				8FA110772D0E98D800B73666 /* MatchMate */,
-				8FA1108D2D0E98DB00B73666 /* MatchMateTests */,
+				8F5096E52D103BB1009C61D2 /* MatchMateUnitTests */,
 				8FA110972D0E98DB00B73666 /* MatchMateUITests */,
+				8F5096EA2D103D9D009C61D2 /* Frameworks */,
 				8FA110762D0E98D800B73666 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -128,6 +173,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				8F5096E52D103BB1009C61D2 /* MatchMateUnitTests */,
 				8FA110772D0E98D800B73666 /* MatchMate */,
 			);
 			name = MatchMate;
@@ -146,14 +192,12 @@
 				8FA110862D0E98DB00B73666 /* Sources */,
 				8FA110872D0E98DB00B73666 /* Frameworks */,
 				8FA110882D0E98DB00B73666 /* Resources */,
+				8F5096EE2D103D9D009C61D2 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				8FA1108C2D0E98DB00B73666 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				8FA1108D2D0E98DB00B73666 /* MatchMateTests */,
 			);
 			name = MatchMateTests;
 			packageProductDependencies = (
@@ -200,6 +244,7 @@
 					};
 					8FA110892D0E98DB00B73666 = {
 						CreatedOnToolsVersion = 16.1;
+						LastSwiftMigration = 1610;
 						TestTargetID = 8FA110742D0E98D800B73666;
 					};
 					8FA110932D0E98DB00B73666 = {
@@ -480,6 +525,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = T92R8TU7BG;
@@ -489,7 +535,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = anirudha.MatchMateTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "MatchMateTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MatchMate.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MatchMate";
 			};
@@ -499,6 +548,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = T92R8TU7BG;
@@ -508,7 +558,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = anirudha.MatchMateTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "MatchMateTests-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
+				SYSTEM_FRAMEWORK_SEARCH_PATHS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MatchMate.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MatchMate";
 			};

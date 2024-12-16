@@ -14,18 +14,19 @@ import Combine
 class MatchViewModel: ObservableObject {
     @Published var profiles: [UserProfile] = []
     private let context: NSManagedObjectContext
+    private let networkClient: NetworkClientProtocol
 
-    init(context: NSManagedObjectContext) {
-        self.context = context
-        loadCachedProfiles() // Initially load cached profiles
-    }
+    init(context: NSManagedObjectContext, networkClient: NetworkClientProtocol = NetworkClient()) {
+           self.context = context
+           self.networkClient = networkClient
+           loadCachedProfiles()
+       }
 
     /// Fetch profiles from the API. If offline or the request fails, use cached profiles.
     func fetchProfiles() {
-        AF.request("https://randomuser.me/api/?results=10")
-            .validate()
-            .responseDecodable(of: APIResponse.self) { response in
-                switch response.result {
+        networkClient.fetchProfiles { result in
+            DispatchQueue.main.async {
+                switch result {
                 case .success(let data):
                     // Clear existing profiles and use API response
                     self.profiles = data.results.map {
@@ -39,12 +40,12 @@ class MatchViewModel: ObservableObject {
                         )
                     }
                     self.saveProfilesToCache(profiles: self.profiles) // Cache API data locally
-                    
-                case .failure:
+                case .failure(let error):
                     print("API fetch failed. Falling back to cached data.")
                     self.loadCachedProfiles() // Load from Core Data on failure
                 }
             }
+        }
     }
 
     /// Update the status of a user profile and sync with Core Data.
