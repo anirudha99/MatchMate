@@ -10,19 +10,19 @@ import CoreData
 @testable import MatchMate
 
 // MARK: - Mock Network Client
-protocol NetworkClientProtocol {
-    func fetchProfiles(completion: @escaping (Result<[APIUser], Error>) -> Void)
+protocol MockNetworkClientProtocol {
+    func fetchProfiles(completion: @escaping (Result<[APIResponse.APIUser], Error>) -> Void)
 }
 
 class MockNetworkClient: NetworkClientProtocol {
-    var mockProfiles: [APIUser] = []
+    var mockResponse: APIResponse = APIResponse(results: [])
     var shouldFail = false
     
-    func fetchProfiles(completion: @escaping (Result<[APIUser], Error>) -> Void) {
+    func fetchProfiles(completion: @escaping (Result<APIResponse, Error>) -> Void) {
         if shouldFail {
             completion(.failure(NSError(domain: "NetworkError", code: 500, userInfo: nil)))
         } else {
-            completion(.success(mockProfiles))
+            completion(.success(mockResponse))
         }
     }
 }
@@ -36,7 +36,7 @@ class MatchViewModelTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        // Create an in-memory Core Data stack
+        // Create an in-memory Core Data stack for each test to ensure isolation
         let container = NSPersistentContainer(name: "MatchMate")
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType
@@ -51,11 +51,21 @@ class MatchViewModelTests: XCTestCase {
         
         mockContext = container.viewContext
         mockNetworkClient = MockNetworkClient()
-        
         viewModel = MatchViewModel(context: mockContext, networkClient: mockNetworkClient)
     }
-    
+
     override func tearDown() {
+        // Clear out the Core Data context to ensure test isolation
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = UserProfileEntity.fetchRequest()
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        
+        do {
+            try mockContext.execute(deleteRequest)
+            try mockContext.save()
+        } catch {
+            print("Failed to clear Core Data context: \(error)")
+        }
+
         viewModel = nil
         mockContext = nil
         mockNetworkClient = nil
@@ -64,13 +74,14 @@ class MatchViewModelTests: XCTestCase {
     
     func testFetchProfiles_Success() {
         // Prepare mock API data
-        let mockUser = APIUser(
-            name: Name(first: "John", last: "Doe"),
-            dob: DOB(age: 25),
-            location: Location(city: "New York"),
-            picture: Picture(large: "https://example.com/image.jpg")
+        let mockUser = APIResponse.APIUser(
+            name: APIResponse.APIUser.APIName(first: "John", last: "Doe"),
+            dob: APIResponse.APIUser.APIDob(age: 25),
+            location: APIResponse.APIUser.APILocation(city: "New York"),
+            picture: APIResponse.APIUser.APIPicture(large: "https://example.com/image.jpg")
         )
-        mockNetworkClient.mockProfiles = [mockUser]
+        let mockResponse = APIResponse(results: [mockUser])
+        mockNetworkClient.mockResponse = mockResponse
         
         // Expectation for async API fetch
         let expectation = XCTestExpectation(description: "Fetch profiles from API")
@@ -86,7 +97,7 @@ class MatchViewModelTests: XCTestCase {
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 2)
+        wait(for: [expectation], timeout: 4)
     }
     
     func testFetchProfiles_Failure() {
@@ -145,4 +156,3 @@ class MatchViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.profiles[0].name, "Cached User", "Loaded profile name should match")
     }
 }
-

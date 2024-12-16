@@ -17,10 +17,10 @@ class MatchViewModel: ObservableObject {
     private let networkClient: NetworkClientProtocol
 
     init(context: NSManagedObjectContext, networkClient: NetworkClientProtocol = NetworkClient()) {
-           self.context = context
-           self.networkClient = networkClient
-           loadCachedProfiles()
-       }
+        self.context = context
+        self.networkClient = networkClient
+        loadCachedProfiles()
+    }
 
     /// Fetch profiles from the API. If offline or the request fails, use cached profiles.
     func fetchProfiles() {
@@ -29,20 +29,22 @@ class MatchViewModel: ObservableObject {
                 switch result {
                 case .success(let data):
                     // Clear existing profiles and use API response
-                    self.profiles = data.results.map {
+                    self.profiles = data.results.map { apiUser in
                         UserProfile(
                             id: UUID(),
-                            name: "\($0.name.first) \($0.name.last)",
-                            age: $0.dob.age,
-                            location: $0.location.city,
-                            imageURL: $0.picture.large,
+                            name: "\(apiUser.name.first) \(apiUser.name.last)",
+                            age: apiUser.dob.age,
+                            location: apiUser.location.city,
+                            imageURL: apiUser.picture.large,
                             status: .pending
                         )
                     }
-                    self.saveProfilesToCache(profiles: self.profiles) // Cache API data locally
+                    // Cache the fetched profiles to Core Data
+                    self.saveProfilesToCache(profiles: self.profiles)
+
                 case .failure(let error):
-                    print("API fetch failed. Falling back to cached data.")
-                    self.loadCachedProfiles() // Load from Core Data on failure
+                    print("API fetch failed with error: \(error.localizedDescription). Falling back to cached data.")
+                    self.loadCachedProfiles() // Load from Core Data when API request fails
                 }
             }
         }
@@ -73,7 +75,7 @@ class MatchViewModel: ObservableObject {
     }
 
     /// Load cached profiles from Core Data.
-    private func loadCachedProfiles() {
+    func loadCachedProfiles() {
         let fetchRequest: NSFetchRequest<UserProfileEntity> = UserProfileEntity.fetchRequest()
         
         do {
